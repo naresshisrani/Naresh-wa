@@ -50,7 +50,6 @@ jobs:
   deploy:
     name: Deploy to production
     needs: test          # only runs if the test job above passes
-    if: ${{ secrets.SSH_HOST != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
