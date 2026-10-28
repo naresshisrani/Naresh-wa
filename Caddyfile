@@ -1,19 +1,12 @@
-# Caddy configuration for automatic HTTPS on real domain
-nareshisrani.dpdns.org, ai4automation.in, www.ai4automation.in {
-    @sse path /api/qr-stream
-    handle @sse {
-        reverse_proxy app:3000 {
-            flush_interval -1
-        }
-    }
-
-    reverse_proxy app:3000 {
-        flush_interval 100ms
-    }
+{
+    email naresshisrani@gmail.com
 }
 
-# Fallback for direct IP access over HTTP
-:80 {
+nareshisrani.dpdns.org {
+    tls {
+        key_type rsa2048
+    }
+
     @sse path /api/qr-stream
     handle @sse {
         reverse_proxy app:3000 {
