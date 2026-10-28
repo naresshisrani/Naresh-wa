@@ -19,21 +19,26 @@ echo "📦 [1/6] Verifying system packages and Docker..."
 if ! command -v docker &> /dev/null || ! docker compose version &> /dev/null; then
     echo "   Installing Docker & Docker Compose..."
     sudo apt-get update -qq
-    sudo apt-get install -y -qq apt-transport-https ca-certificates curl gnupg lsb-release git
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq apt-transport-https ca-certificates curl gnupg lsb-release git
 
-    # Official Docker repo setup
-    sudo install -m 0755 -d /etc/apt/keyrings
-    if [ ! -f /etc/apt/keyrings/docker.gpg ]; then
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-        sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    # Try Ubuntu repository first (always matches Ubuntu release)
+    if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-v2; then
+        echo "   ✔ Installed Docker from Ubuntu packages"
+    elif sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-plugin; then
+        echo "   ✔ Installed Docker from Ubuntu packages"
+    else
+        # Fallback to Docker upstream repository
+        sudo install -m 0755 -d /etc/apt/keyrings
+        if [ ! -f /etc/apt/keyrings/docker.gpg ]; then
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            sudo chmod a+r /etc/apt/keyrings/docker.gpg
+        fi
+        CODENAME=$(lsb_release -cs 2>/dev/null || echo "noble")
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu ${CODENAME} stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update -qq
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     fi
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-    sudo apt-get update -qq
-    sudo apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     sudo systemctl enable --now docker
     sudo usermod -aG docker "$USER" || true
     echo "   ✔ Docker installed successfully"
@@ -113,9 +118,10 @@ echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"
 echo "║   ✅ DEPLOYMENT SUCCESSFUL!                                   ║"
 echo "╠══════════════════════════════════════════════════════════════╣"
-echo "║   • Direct IP Access:  http://${PUBLIC_IP} (or https if domain pointed)"
+echo "║   • Direct Access:     http://${PUBLIC_IP}:3000"
+echo "║   • Domain / Web:      http://${PUBLIC_IP} (or https://ai4automation.in)"
 echo "║   • Health check:      curl -f http://localhost:3000/health"
-echo "║   • Logs:              sudo docker compose logs -f app"
-echo "║   • Data Dir:          $APP_DIR/data"
+echo "║   • Live logs:         sudo docker compose logs -f app"
+echo "║   • Project Dir:       $APP_DIR"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
