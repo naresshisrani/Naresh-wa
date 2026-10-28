@@ -23,19 +23,23 @@ async function checkAuth() {
 
         const nameEl   = document.getElementById('topbarUserName');
         const avatarEl = document.getElementById('topbarAvatar');
-        const adminNav = document.getElementById('nav-admin');
+        const adminNav    = document.getElementById('nav-admin');
+        const topbarAdmin = document.getElementById('topbarAdminBtn');
+        const mobileAdmin = document.getElementById('mobileAdminBtn');
+        const dashAdmin   = document.getElementById('dashboardAdminCard');
+        const isAdmin     = CURRENT_USER.role === 'admin';
         const label = CURRENT_USER.business_name || CURRENT_USER.owner_name || CURRENT_USER.email;
         if (nameEl)   nameEl.textContent = label;
         if (avatarEl) avatarEl.textContent = label.slice(0, 2).toUpperCase();
-        if (adminNav) {
-            if (CURRENT_USER.role === 'admin') {
-                adminNav.classList.remove('hidden');
-                adminNav.style.display = '';
-            } else {
-                adminNav.classList.add('hidden');
-                adminNav.style.display = 'none';
-            }
-        }
+        const toggleEl = (el, show, d = 'flex') => {
+            if (!el) return;
+            if (show) { el.classList.remove('hidden'); el.style.setProperty('display', d, 'important'); }
+            else { el.classList.add('hidden'); el.style.setProperty('display', 'none', 'important'); }
+        };
+        toggleEl(adminNav, isAdmin, 'flex');
+        toggleEl(topbarAdmin, isAdmin, 'inline-flex');
+        toggleEl(mobileAdmin, isAdmin, 'inline-flex');
+        toggleEl(dashAdmin, isAdmin, 'block');
 
         return true;
     } catch (err) {
