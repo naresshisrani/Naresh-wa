@@ -1,5 +1,5 @@
 # Caddy configuration for automatic HTTPS on real domain
-ai4automation.in, www.ai4automation.in {
+nareshisrani.dpdns.org, ai4automation.in, www.ai4automation.in {
     @sse path /api/qr-stream
     handle @sse {
         reverse_proxy app:3000 {
