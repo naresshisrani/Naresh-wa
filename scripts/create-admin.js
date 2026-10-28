@@ -46,12 +46,14 @@ function randomPassword() {
             password_hash: passwordHash
         });
         console.log(`Updated existing account #${user.id} (${email}) -> role=admin, status=active, password reset.`);
+        db.forcePersist();
     } else {
         user = db.createUser({ email, passwordHash, businessName, ownerName: '' });
         // createUser only auto-assigns admin to the very first-ever signup;
         // force it here so this works no matter how many accounts already exist.
         user = db.updateUser(user.id, { role: 'admin', status: 'active' });
         console.log(`Created new admin account #${user.id} (${email}).`);
+        db.forcePersist();
     }
 
     console.log('');
