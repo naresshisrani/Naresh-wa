@@ -20,7 +20,7 @@
 const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-const db = require(path.join(__dirname, '..', 'src', 'database'));
+const db = require(path.join(__dirname, '..', 'src', 'services', 'database'));
 
 function randomPassword() {
     return crypto.randomBytes(9).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);

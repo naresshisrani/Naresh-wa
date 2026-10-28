@@ -1,12 +1,12 @@
 name: CI → Deploy to production
 
-# Runs on every push to updated-WA.
+# Runs on every push to main or updated-WA.
 #
 # Gate order (each must pass before the next runs):
 #   1. npm ci           — clean dependency install (catches lock-file drift)
 #   2. npm test         — full Jest suite (0 failures required)
 #   3. docker build     — image builds without errors
-#   4. rsync to EC2     — only reached if all three above pass
+#   4. rsync to EC2     — only reached if all three above pass & SSH_HOST secret exists
 #   5. docker compose up — rolls out new image
 #   6. health check     — verifies the new container is serving HTTPS
 #
@@ -15,6 +15,7 @@ name: CI → Deploy to production
 on:
   push:
     branches:
+      - main
       - updated-WA
 
 jobs:
@@ -49,6 +50,7 @@ jobs:
   deploy:
     name: Deploy to production
     needs: test          # only runs if the test job above passes
+    if: ${{ secrets.SSH_HOST != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -16,7 +16,7 @@
  *   node scripts/reset-accounts.js --yes
  */
 const path = require('path');
-const db = require(path.join(__dirname, '..', 'src', 'database'));
+const db = require(path.join(__dirname, '..', 'src', 'services', 'database'));
 
 (async () => {
     if (!process.argv.includes('--yes')) {

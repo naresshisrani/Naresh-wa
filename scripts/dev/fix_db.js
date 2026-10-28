@@ -19,7 +19,7 @@
  *   node fix_db.js you@example.com
  */
 const path = require('path');
-const db = require(path.join(__dirname, 'src', 'database'));
+const db = require(path.join(__dirname, '..', '..', 'src', 'services', 'database'));
 
 const goodPrompt = `You are a friendly, natural AI texting on WhatsApp on behalf of the account owner.
 

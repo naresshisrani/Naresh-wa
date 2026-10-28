@@ -15,7 +15,7 @@
  */
 
 const path = require('path');
-const db = require(path.join(__dirname, 'src', 'database'));
+const db = require(path.join(__dirname, '..', '..', 'src', 'services', 'database'));
 
 (async () => {
     const email = (process.argv[2] || '').trim().toLowerCase();
